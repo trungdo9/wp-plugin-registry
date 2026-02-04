@@ -7,12 +7,14 @@ namespace WPPluginRegistry\Admin;
 class Admin {
     private $manager;
     private $registry;
-    private $github;
 
     private function __construct() {
-        $this->manager = \WPPluginRegistry\Main::get_instance()->get_manager();
-        $this->registry = \WPPluginRegistry\Main::get_instance()->get_registry();
-        $this->github = \WPPluginRegistry\Main::get_instance()->get_github_client();
+        // Initialize Main first
+        $main = \WPPluginRegistry\Main::get_instance();
+        $main->init();
+
+        $this->manager = $main->get_manager();
+        $this->registry = $main->get_registry();
 
         add_action('admin_menu', [$this, 'add_menu_pages']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
