@@ -23,22 +23,15 @@ define('WPPR_URL', plugin_dir_url(WPPR_FILE));
 define('WPPR_BASENAME', plugin_basename(WPPR_FILE));
 define('WPPR_PLUGINS_DIR', defined('WP_CONTENT_DIR') ? WP_CONTENT_DIR . '/plugins' : ABSPATH . 'wp-content/plugins');
 
+// Load Composer autoloader
+if (file_exists(WPPR_PATH . 'vendor/autoload.php')) {
+    require_once WPPR_PATH . 'vendor/autoload.php';
+}
+
 // Load classes on plugins_loaded
 add_action('plugins_loaded', 'wppr_init', 5);
 
 function wppr_init() {
-    // Load all classes
-    require_once WPPR_PATH . 'src/Traits/Singleton.php';
-    require_once WPPR_PATH . 'src/GitHub/GitHubClient.php';
-    require_once WPPR_PATH . 'src/GitHub/Downloader.php';
-    require_once WPPR_PATH . 'src/GitHub/GitHubActions.php';
-    require_once WPPR_PATH . 'src/Plugin/Registry.php';
-    require_once WPPR_PATH . 'src/Plugin/ActivityLogger.php';
-    require_once WPPR_PATH . 'src/Plugin/Manager.php';
-    require_once WPPR_PATH . 'src/Admin/Admin.php';
-    require_once WPPR_PATH . 'src/CLI/Commands.php';
-    require_once WPPR_PATH . 'src/Main.php';
-
     // Initialize plugin
     \WPPluginRegistry\Main::get_instance();
 }
@@ -47,19 +40,28 @@ function wppr_init() {
 register_activation_hook(WPPR_FILE, 'wppr_activation_handler');
 
 function wppr_activation_handler() {
-    // Create tables
-    require_once WPPR_PATH . 'src/Plugin/Registry.php';
-    require_once WPPR_PATH . 'src/Plugin/ActivityLogger.php';
-    require_once WPPR_PATH . 'src/Traits/Singleton.php';
+    try {
+        // Create tables
+        \WPPluginRegistry\Plugin\Registry::get_instance()->create_tables();
+        \WPPluginRegistry\Plugin\ActivityLogger::get_instance()->create_table();
 
-    \WPPluginRegistry\Plugin\Registry::get_instance()->create_tables();
-    \WPPluginRegistry\Plugin\ActivityLogger::get_instance()->create_table();
+        update_option('wppr_version', WPPR_VERSION);
 
-    update_option('wppr_version', WPPR_VERSION);
-
-    // Schedule cleanup
-    if (!wp_next_scheduled('wppr_daily_cleanup')) {
-        wp_schedule_event(time(), 'daily', 'wppr_daily_cleanup');
+        // Schedule cleanup
+        if (!wp_next_scheduled('wppr_daily_cleanup')) {
+            wp_schedule_event(time(), 'daily', 'wppr_daily_cleanup');
+        }
+    } catch (\Throwable $e) {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('WP Plugin Registry Activation Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+        }
+        wp_die(
+            '<h1>Activation Failed</h1>' .
+            '<p>Plugin could not be activated due to an error:</p>' .
+            '<pre>' . esc_html($e->getMessage()) . '</pre>' .
+            '<p>Please check your error logs for more details.</p>',
+            'Plugin Activation Error'
+        );
     }
 }
 
@@ -75,8 +77,5 @@ function wppr_deactivation_handler() {
 add_action('wppr_daily_cleanup', 'wppr_daily_cleanup_handler');
 
 function wppr_daily_cleanup_handler() {
-    require_once WPPR_PATH . 'src/Plugin/ActivityLogger.php';
-    require_once WPPR_PATH . 'src/Traits/Singleton.php';
-
     \WPPluginRegistry\Plugin\ActivityLogger::get_instance()->delete_old_logs(30);
 }
