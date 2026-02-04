@@ -1,0 +1,16 @@
+{
+    "name": "trungdo9/wp-plugin-registry",
+    "description": "Install and manage WordPress plugins from GitHub repositories",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "WPPluginRegistry\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

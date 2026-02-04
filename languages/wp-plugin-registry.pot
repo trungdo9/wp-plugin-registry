@@ -1,0 +1,170 @@
+# Copyright (C) 2025 trungdo9
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Plugin Registry 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"PO-Revision-Date: 2025-01-01 00:00+0000\n"
+"Last-Translator: trungdo9 <trungdo9@example.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: src/GitHub/Downloader.php
+msgid "PharData class not available"
+msgstr ""
+
+#: src/GitHub/Downloader.php
+msgid "Could not determine root folder"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Invalid GitHub URL"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin is already installed"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin not found in registry"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Main plugin file not found"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin activated"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin deactivated"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin uninstalled"
+msgstr ""
+
+#: src/Plugin/Manager.php
+msgid "Plugin is already up to date"
+msgstr ""
+
+#: src/Admin/Admin.php
+msgid "Insufficient permissions"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "WP Plugin Registry"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Install from GitHub"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "GitHub URL"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Enter the GitHub repository URL"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Version/Branch"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Branch or tag name (e.g., main, master, v1.0.0)"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Activation"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Activate after installation"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Install Plugin"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "GitHub Settings"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Personal Access Token"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Required for private repositories. Create at GitHub Settings > Developer settings > Personal access tokens"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Save Settings"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Installed Plugins"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "No GitHub plugins installed yet."
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Plugin"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Version"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Latest"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Status"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Actions"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Update available"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Active"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Inactive"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Update"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Deactivate"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Activate"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Uninstall"
+msgstr ""
+
+#: templates/admin-page.php
+msgid "Are you sure you want to uninstall this plugin?"
+msgstr ""

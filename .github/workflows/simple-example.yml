@@ -1,0 +1,50 @@
+name: WordPress Plugin Action
+
+# Trigger manually or from WP Plugin Registry
+on:
+  workflow_dispatch:
+    inputs:
+      event_type:
+        description: 'Event type'
+        required: true
+        type: choice
+        options:
+          - install
+          - update
+          - uninstall
+          - release
+      plugin_slug:
+        description: 'Plugin slug'
+        required: false
+      version:
+        description: 'Version'
+        required: false
+
+jobs:
+  handle-event:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Display event info
+        run: |
+          echo "Event: ${{ github.event.inputs.event_type }}"
+          echo "Plugin: ${{ github.event.inputs.plugin_slug || 'N/A' }}"
+          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+
+      # Add your custom commands here
+      # Example: composer install
+      # - name: Install Composer
+      #   if: ${{ contains(fromJson('["install", "update"]'), github.event.inputs.event_type) }}
+      #   run: composer install
+
+      # Example: Run tests
+      # - name: Run Tests
+      #   if: ${{ contains(fromJson('["install", "update"]'), github.event.inputs.event_type) }}
+      #   run: ./vendor/bin/phpunit
+
+      # Example: Build assets
+      # - name: Build Assets
+      #   if: ${{ contains(fromJson('["install", "update"]'), github.event.inputs.event_type) }}
+      #   run: npm install && npm run build

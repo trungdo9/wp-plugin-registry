@@ -1,0 +1,114 @@
+name: WordPress Plugin
+
+on:
+  # Manual trigger from WP Plugin Registry
+  workflow_dispatch:
+    inputs:
+      event_type:
+        description: 'Event type (install, update, uninstall, release, update_available)'
+        required: true
+        type: choice
+        options:
+          - install
+          - update
+          - uninstall
+          - release
+          - update_available
+      plugin_slug:
+        description: 'Plugin slug'
+        required: false
+      version:
+        description: 'Plugin version'
+        required: false
+      source:
+        description: 'Source (wp-plugin-registry)'
+        required: false
+        default: 'wp-plugin-registry'
+
+  # Optional: Run on push to main branch
+  push:
+    branches: [ main, master ]
+
+  # Optional: Run on new releases
+  release:
+    types: [ published ]
+
+jobs:
+  # Example job: Build and deploy
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get plugin info
+        id: plugin-info
+        run: |
+          echo "Event: ${{ github.event.inputs.event_type.value }}"
+          echo "Plugin: ${{ github.event.inputs.plugin_slug || 'N/A' }}"
+          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+
+      # Example: Run composer if needed
+      - name: Install dependencies
+        if: ${{ contains(fromJson('["install", "update"]'), github.event.inputs.event_type.value) }}
+        run: |
+          composer install --no-dev --optimize-autoloader
+
+      # Example: Run tests
+      - name: Run tests
+        if: ${{ contains(fromJson('["install", "update"]'), github.event.inputs.event_type.value) }}
+        run: |
+          # Add your test commands here
+          # echo "Running tests..."
+
+      # Example: Deploy to WordPress.org
+      - name: Deploy to WordPress.org
+        if: ${{ github.event.inputs.event_type.value == 'release' }}
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        run: |
+          # Add your WordPress.org deployment commands here
+          echo "Deploying to WordPress.org..."
+
+  # Example job: Send notifications
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Send Slack notification
+        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: "WordPress Plugin Action triggered: ${{ github.event.inputs.event_type.value }} for ${{ github.event.inputs.plugin_slug || github.repository }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Example job: Update version file
+  update-version:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.event_type.value == 'update' && github.event.inputs.version != '' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Update version constant
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          sed -i "s/define( 'PLUGIN_VERSION', '[^']*' )/define( 'PLUGIN_VERSION', '$VERSION' )/" my-plugin.php
+
+      - name: Commit version update
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: GitHub Actions
+          author_email: actions@github.com
+          message: "Version bump to ${{ github.event.inputs.version }}"
+          add: 'my-plugin.php'
