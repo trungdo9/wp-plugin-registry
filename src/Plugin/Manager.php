@@ -1,6 +1,9 @@
 <?php
 namespace WPPluginRegistry\Plugin;
 
+use WPPluginRegistry\GitHub\Downloader;
+use WPPluginRegistry\GitHub\GitHubActions as GitHubActionsClient;
+
 /**
  * Manage plugin lifecycle (install, update, activate, deactivate, uninstall)
  */
@@ -13,8 +16,8 @@ class Manager {
     public function __construct($github) {
         $this->github = $github;
         $this->downloader = new Downloader($this->github);
-        $this->activity_logger = new ActivityLogger();
-        $this->github_actions = new GitHubActions();
+        $this->activity_logger = ActivityLogger::get_instance();
+        $this->github_actions = new GitHubActionsClient();
     }
 
     /**

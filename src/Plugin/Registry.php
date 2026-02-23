@@ -12,9 +12,22 @@ class Registry {
     private const TABLE_NAME = 'wppr_plugin_registry';
 
     /**
+     * Ensure tables exist before any operation
+     */
+    private function ensure_tables(): void {
+        global $wpdb;
+
+        $table = $wpdb->prefix . self::TABLE_NAME;
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
+            $this->create_tables();
+        }
+    }
+
+    /**
      * Get all registered GitHub plugins
      */
     public function get_all(): array {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -33,6 +46,7 @@ class Registry {
      * Get single plugin by slug
      */
     public function get(string $slug): ?array {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -48,6 +62,7 @@ class Registry {
      * Add new GitHub plugin to registry
      */
     public function add(array $plugin): bool {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -72,6 +87,7 @@ class Registry {
      * Update plugin info
      */
     public function update(string $slug, array $data): bool {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -85,6 +101,7 @@ class Registry {
      * Remove plugin from registry
      */
     public function remove(string $slug): bool {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -95,6 +112,7 @@ class Registry {
      * Check if plugin is registered
      */
     public function exists(string $slug): bool {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -107,6 +125,7 @@ class Registry {
      * Get plugin by local path
      */
     public function find_by_path(string $path): ?array {
+        $this->ensure_tables();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -135,6 +154,12 @@ class Registry {
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
+
+        // Check if table already exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") === $table) {
+            return;
+        }
+
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE {$table} (
@@ -150,9 +175,8 @@ class Registry {
             has_update tinyint(1) DEFAULT 0,
             created_at datetime DEFAULT '0000-00-00 00:00:00',
             updated_at datetime DEFAULT '0000-00-00 00:00:00',
-            PRIMARY KEY (id),
-            KEY plugin_slug (plugin_slug),
-            KEY local_path (local_path(255))
+            PRIMARY KEY  (id),
+            KEY local_path (local_path(191))
         ) {$charset_collate};";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';

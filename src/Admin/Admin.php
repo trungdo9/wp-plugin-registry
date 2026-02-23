@@ -1,17 +1,19 @@
 <?php
 namespace WPPluginRegistry\Admin;
 
+use WPPluginRegistry\Traits\Singleton;
+
 /**
  * Admin interface for plugin management
  */
 class Admin {
+    use Singleton;
+
     private $manager;
     private $registry;
 
     private function __construct() {
-        // Initialize Main first
         $main = \WPPluginRegistry\Main::get_instance();
-        $main->init();
 
         $this->manager = $main->get_manager();
         $this->registry = $main->get_registry();

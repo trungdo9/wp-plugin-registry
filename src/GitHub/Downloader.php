@@ -101,14 +101,21 @@ class Downloader {
      * Get root folder name from archive
      */
     private function get_root_folder(\PharData $phar): ?string {
-        foreach ($phar as $entry) {
-            $filename = $entry->getFilename();
-            $parts = explode('/', $filename);
-            if (count($parts) > 1) {
-                return $parts[0];
-            }
+        // GitHub tarball format: owner-repo-{hash}/...
+        // We need to find the first directory in the archive
+        $path = $phar->getPathname();
+        $phar2 = new \Phar($path);
+        $files = array_keys($phar2->deconstruct()['files']);
+
+        if (empty($files)) {
+            return null;
         }
-        return null;
+
+        // Get first file and extract folder
+        $first_file = reset($files);
+        $parts = explode('/', $first_file);
+
+        return isset($parts[0]) ? $parts[0] : null;
     }
 
     /**

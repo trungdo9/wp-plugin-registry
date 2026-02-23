@@ -12,6 +12,18 @@ class ActivityLogger {
     private const TABLE_NAME = 'wppr_activity_logs';
 
     /**
+     * Ensure the activity logs table exists
+     */
+    private function ensure_table(): void {
+        global $wpdb;
+
+        $table = $wpdb->prefix . self::TABLE_NAME;
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
+            $this->create_table();
+        }
+    }
+
+    /**
      * Log an activity
      *
      * @param string $action Action type (install, update, activate, deactivate, uninstall)
@@ -21,6 +33,7 @@ class ActivityLogger {
      * @return int|false Log ID or false on failure
      */
     public function log($action, $plugin_slug, $message = '', $extra = []) {
+        $this->ensure_table();
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
@@ -281,6 +294,12 @@ class ActivityLogger {
         global $wpdb;
 
         $table = $wpdb->prefix . self::TABLE_NAME;
+
+        // Check if table already exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") === $table) {
+            return;
+        }
+
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE {$table} (

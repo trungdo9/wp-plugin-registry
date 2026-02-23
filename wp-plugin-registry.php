@@ -33,7 +33,8 @@ add_action('plugins_loaded', 'wppr_init', 5);
 
 function wppr_init() {
     // Initialize plugin
-    \WPPluginRegistry\Main::get_instance();
+    $main = \WPPluginRegistry\Main::get_instance();
+    $main->init();
 }
 
 // Activation hook - must be registered at top level
@@ -41,6 +42,11 @@ register_activation_hook(WPPR_FILE, 'wppr_activation_handler');
 
 function wppr_activation_handler() {
     try {
+        // Load required classes manually for activation
+        require_once WPPR_PATH . 'src/Traits/Singleton.php';
+        require_once WPPR_PATH . 'src/Plugin/Registry.php';
+        require_once WPPR_PATH . 'src/Plugin/ActivityLogger.php';
+
         // Create tables
         \WPPluginRegistry\Plugin\Registry::get_instance()->create_tables();
         \WPPluginRegistry\Plugin\ActivityLogger::get_instance()->create_table();
